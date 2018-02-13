@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "outDir": "./dist/",
+    "module": "commonjs",
+    "target": "esnext",
+    "jsx": "react",
+    "baseUrl": "./",
+    "paths": {
+      "xmob": [
+        "../../xmob/index.ts"
+      ],
+      "xmob-react": [
+        "../../xmob-react/index.ts"
+      ]
+    },
+  },
+  "include": [
+    "./src/**/*"
+  ]
+}

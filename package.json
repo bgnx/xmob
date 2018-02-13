@@ -1,0 +1,12 @@
+{
+  "name": "xmob",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "dependencies": {
+    "@types/react": "^16.0.36",
+    "react": "^16.2.0",
+    "typescript": "^2.7.1"
+  }
+}

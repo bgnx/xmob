@@ -1,0 +1,25 @@
+{
+  "name": "react-counter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack",
+    "start": "static -p 3000 dist & webpack --watch --color --progress"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/react": "^16.0.36",
+    "@types/react-dom": "^16.0.3",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0"
+  },
+  "devDependencies": {
+    "awesome-typescript-loader": "^3.4.1",
+    "html-webpack-plugin": "^2.30.1",
+    "node-static": "^0.7.10",
+    "typescript": "^2.7.1",
+    "webpack": "^3.11.0"
+  }
+}

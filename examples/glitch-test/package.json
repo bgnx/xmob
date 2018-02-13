@@ -1,0 +1,15 @@
+{
+  "name": "glitch-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "tsc && node ./dist/examples/glitch-test/src/index.js",
+    "debug": "tsc && node --inspect-brk ./dist/examples/glitch-test/src/index.js"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^9.4.5",
+    "typescript": "^2.7.1"
+  }
+}
