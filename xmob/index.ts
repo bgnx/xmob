@@ -48,6 +48,7 @@ export class Cell<T> {
   actualize() {
     if (this.state === "check") {
       for (const dep of this.dependencies) {
+        if((this.state as "check" | "dirty") === "dirty") break;
         dep.actualize();
       }
       if((this.state as "check" | "dirty") === "dirty"){
