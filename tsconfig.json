@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "strict": true,
-    "target": "esnext"
+    "target": "esnext",
+    "module": "commonjs"
   },
   "include": [
     "xmob/**/*",
