@@ -75,6 +75,7 @@ export class Cell {
     for (const dep of oldDependencies) {
       if (!this.dependencies.has(dep)) {
         dep.reactions.delete(this);
+        if(dep.reactions.size === 0) dep.unsubscribe();
       }
     }
     const changed = this.set(newValue);
