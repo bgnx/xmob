@@ -10,7 +10,6 @@ export class Cell {
   reactionFn;
   active;
   state;
-  runned = false;
   constructor(value, fn = null, reactionFn = null, active = false) {
     this.value = value;
     this.fn = fn;
@@ -82,8 +81,7 @@ export class Cell {
     if (changed && this.reactionFn) {
       const currentObserver = CurrentObserver;
       CurrentObserver = null;
-      this.reactionFn(!this.runned);
-      if(!this.runned) this.runned = true;
+      this.reactionFn();
       CurrentObserver = currentObserver;
     }
   }
