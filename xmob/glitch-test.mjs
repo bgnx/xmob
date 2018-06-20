@@ -21,7 +21,7 @@ const label = new Cell("", () => {
   }
   Logs.push(["label", newValue]);
   return newValue;
-}, null, true)
+}, true)
 
 
 label.get();

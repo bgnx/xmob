@@ -1,4 +1,4 @@
-let CurrentObserver = null
+export let CurrentObserver = null
 const PendingCells = [];
 let Timer = null;
 
@@ -7,13 +7,11 @@ export class Cell {
   dependencies = new Set();
   value;
   fn;
-  reactionFn;
   active;
   state;
-  constructor(value, fn = null, reactionFn = null, active = false) {
+  constructor(value, fn = null, active = false) {
     this.value = value;
     this.fn = fn;
-    this.reactionFn = reactionFn;
     this.active = active;
     this.state = fn ? "dirty" : "actual";
   }
@@ -32,9 +30,6 @@ export class Cell {
       for (const reaction of this.reactions) {
         reaction.mark(true);
       }
-      return true;
-    } else {
-      return false;
     }
   }
   mark(dirty = false) {
@@ -76,14 +71,8 @@ export class Cell {
         if(dep.reactions.size === 0) dep.unsubscribe();
       }
     }
-    const changed = this.set(newValue);
+    this.set(newValue);
     this.state = "actual";
-    if (changed && this.reactionFn) {
-      const currentObserver = CurrentObserver;
-      CurrentObserver = null;
-      this.reactionFn();
-      CurrentObserver = currentObserver;
-    }
   }
   unsubscribe() {
     for (const dep of this.dependencies) {
