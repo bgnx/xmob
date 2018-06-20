@@ -80,6 +80,7 @@ export class Cell {
       dep.reactions.delete(this);
       if(dep.reactions.size === 0) dep.unsubscribe();
     }
+    this.dependencies.clear();
     this.state = "dirty";
   }
 }
