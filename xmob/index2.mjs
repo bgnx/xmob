@@ -38,18 +38,18 @@ export class ComputedCell extends Cell {
     this.active = active;
     this.state = fn ? "dirty" : "actual";
   }
-  get(){
+  get() {
     if (this.state !== "actual") this.actualize();
     return super.get();
   }
   markAsCheck() {
     for (const reaction of this.reactions) {
-      if(reaction.state === "actual") {
+      if (reaction.state === "actual") {
         reaction.state = "check";
         reaction.markAsCheck();
       }
     }
-    if (this.active){
+    if (this.active) {
       PendingCells.push(this);
       if (Timer === 0) Timer = setTimeout(runPendingCells);
     }
@@ -57,13 +57,15 @@ export class ComputedCell extends Cell {
   actualize() {
     if (this.state === "check") {
       for (const dep of this.dependencies) {
-        if(dep instanceof ComputedCell) dep.actualize();
-        if(this.state === "dirty") {
-          this.run();
-          break;
+        if (dep instanceof ComputedCell) {
+          dep.actualize();
+          if (this.state === "dirty") {
+            this.run();
+            break;
+          }
         }
       }
-    } else if(this.state === "dirty"){
+    } else if (this.state === "dirty") {
       this.run();
     }
     this.state = "actual";
@@ -78,7 +80,7 @@ export class ComputedCell extends Cell {
     for (const dep of oldDependencies) {
       if (!this.dependencies.has(dep)) {
         dep.reactions.delete(this);
-        if(dep instanceof ComputedCell && dep.reactions.size === 0) dep.unsubscribe();
+        if (dep instanceof ComputedCell && dep.reactions.size === 0) dep.unsubscribe();
       }
     }
     this.tempSet = oldDependencies;
@@ -88,7 +90,7 @@ export class ComputedCell extends Cell {
   unsubscribe() {
     for (const dep of this.dependencies) {
       dep.reactions.delete(this);
-      if(dep instanceof ComputedCell && dep.reactions.size === 0) dep.unsubscribe();
+      if (dep instanceof ComputedCell && dep.reactions.size === 0) dep.unsubscribe();
     }
     this.dependencies.clear();
     this.state = "dirty";
@@ -99,7 +101,7 @@ export function runPendingCells() {
   for (const cell of PendingCells) {
     cell.actualize();
   }
-  if(Timer !== 0){
+  if (Timer !== 0) {
     clearTimeout(Timer);
     Timer = 0;
   }
