@@ -50,14 +50,12 @@ export class Cell {
       }
       if(this.state === "dirty"){
         this.run();
-        this.state = "actual";
-      } else {
-        this.state = "actual"
       }
+      this.state = "actual"
     } else if(this.state === "dirty"){
       this.run();
       this.state = "actual";
-    } 
+    }
   }
   run() {
     if (!this.fn) return;
