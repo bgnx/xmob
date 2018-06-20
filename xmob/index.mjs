@@ -49,11 +49,11 @@ export class Cell {
   actualize() {
     if (this.state === "check") {
       for (const dep of this.dependencies) {
-        if(this.state === "dirty") break;
         dep.actualize();
-      }
-      if(this.state === "dirty"){
-        this.run();
+        if(this.state === "dirty"){
+          this.run();
+          break;
+        }
       }
     } else if(this.state === "dirty"){
       this.run();
