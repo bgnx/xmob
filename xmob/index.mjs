@@ -1,6 +1,6 @@
 export let CurrentObserver = null
 const PendingCells = [];
-let Timer = null;
+let Timer = 0;
 
 export class Cell {
   reactions = new Set();
@@ -39,7 +39,7 @@ export class Cell {
     }
     if (this.active){
       PendingCells.push(this);
-      if (!Timer) Timer = Promise.resolve().then(runPendingCells);
+      if (!Timer) Timer = setTimeout(runPendingCells);
     }
   }
   actualize() {
@@ -85,5 +85,8 @@ export function runPendingCells() {
   for (const cell of PendingCells) {
     cell.actualize();
   }
-  Timer = null;
+  if(Timer !== 0){
+    clearTimeout(Timer);
+    Timer = 0;
+  }
 }
