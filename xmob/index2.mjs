@@ -4,21 +4,11 @@ let Timer = 0;
 
 export class Cell {
   reactions = new Set();
-  dependencies = new Set();
-  tempSet = new Set();
   value;
-  fn;
-  active;
-  state;
   constructor(value, fn = null, active = false) {
     this.value = value;
-    this.fn = fn;
-    this.active = active;
-    this.state = fn ? "dirty" : "actual";
   }
-
   get() {
-    if (this.state !== "actual") this.actualize();
     if (CurrentObserver) {
       this.reactions.add(CurrentObserver);
       CurrentObserver.dependencies.add(this);
@@ -33,6 +23,24 @@ export class Cell {
         reaction.markAsCheck();
       }
     }
+  }
+}
+
+export class ComputedCell extends Cell {
+  dependencies = new Set();
+  tempSet = new Set();
+  fn;
+  active;
+  state;
+  constructor(value, fn = null, active = false) {
+    super(value);
+    this.fn = fn;
+    this.active = active;
+    this.state = fn ? "dirty" : "actual";
+  }
+  get(){
+    if (this.state !== "actual") this.actualize();
+    return super.get();
   }
   markAsCheck() {
     for (const reaction of this.reactions) {
@@ -49,11 +57,11 @@ export class Cell {
   actualize() {
     if (this.state === "check") {
       for (const dep of this.dependencies) {
-        if(this.state === "dirty") break;
-        dep.actualize();
-      }
-      if(this.state === "dirty"){
-        this.run();
+        if(dep instanceof ComputedCell) dep.actualize();
+        if(this.state === "dirty") {
+          this.run();
+          break;
+        }
       }
     } else if(this.state === "dirty"){
       this.run();
@@ -61,7 +69,6 @@ export class Cell {
     this.state = "actual";
   }
   run() {
-    if (!this.fn) return;
     const currentObserver = CurrentObserver;
     CurrentObserver = this;
     const oldDependencies = this.dependencies;
@@ -71,7 +78,7 @@ export class Cell {
     for (const dep of oldDependencies) {
       if (!this.dependencies.has(dep)) {
         dep.reactions.delete(this);
-        if(dep.reactions.size === 0) dep.unsubscribe();
+        if(dep instanceof ComputedCell && dep.reactions.size === 0) dep.unsubscribe();
       }
     }
     this.tempSet = oldDependencies;
@@ -81,7 +88,7 @@ export class Cell {
   unsubscribe() {
     for (const dep of this.dependencies) {
       dep.reactions.delete(this);
-      if(dep.reactions.size === 0) dep.unsubscribe();
+      if(dep instanceof ComputedCell && dep.reactions.size === 0) dep.unsubscribe();
     }
     this.dependencies.clear();
     this.state = "dirty";
