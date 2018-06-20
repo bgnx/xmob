@@ -50,11 +50,13 @@ export class Cell {
       }
       if(this.state === "dirty"){
         this.run();
+        this.state = "actual";
       } else {
         this.state = "actual"
       }
     } else if(this.state === "dirty"){
       this.run();
+      this.state = "actual";
     } 
   }
   run() {
@@ -72,7 +74,6 @@ export class Cell {
       }
     }
     this.set(newValue);
-    this.state = "actual";
   }
   unsubscribe() {
     for (const dep of this.dependencies) {
