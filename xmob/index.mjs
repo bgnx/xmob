@@ -5,14 +5,13 @@ let Timer = null;
 export class Cell {
   reactions = new Set();
   dependencies = new Set();
+  value;
+  fn;
+  reactionFn;
+  active;
   state;
   runned = false;
-  constructor(
-    value,
-    fn = null,
-    reactionFn = null,
-    active = false,
-  ) {
+  constructor(value, fn = null, reactionFn = null, active = false) {
     this.value = value;
     this.fn = fn;
     this.reactionFn = reactionFn;
