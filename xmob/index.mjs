@@ -39,7 +39,7 @@ export class Cell {
     }
     if (this.active){
       PendingCells.push(this);
-      if (!Timer) Timer = setTimeout(runPendingCells);
+      if (Timer === 0) Timer = setTimeout(runPendingCells);
     }
   }
   actualize() {
