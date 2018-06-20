@@ -5,6 +5,7 @@ let Timer = 0;
 export class Cell {
   reactions = new Set();
   dependencies = new Set();
+  tempSet = new Set();
   value;
   fn;
   active;
@@ -61,7 +62,7 @@ export class Cell {
     const currentObserver = CurrentObserver;
     CurrentObserver = this;
     const oldDependencies = this.dependencies;
-    this.dependencies = new Set();
+    this.dependencies = this.tempSet;
     const newValue = this.fn();
     CurrentObserver = currentObserver;
     for (const dep of oldDependencies) {
@@ -70,6 +71,8 @@ export class Cell {
         if(dep.reactions.size === 0) dep.unsubscribe();
       }
     }
+    this.tempSet = oldDependencies;
+    this.tempSet.clear();
     this.set(newValue);
   }
   unsubscribe() {
