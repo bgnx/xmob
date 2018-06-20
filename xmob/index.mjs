@@ -29,14 +29,17 @@ export class Cell {
     if (newValue !== this.value) {
       this.value = newValue;
       for (const reaction of this.reactions) {
-        reaction.mark(true);
+        reaction.state = "dirty";
+        reaction.markAsCheck();
       }
     }
   }
-  mark(dirty = false) {
-    this.state = dirty ? "dirty" : "check";
+  markAsCheck() {
     for (const reaction of this.reactions) {
-      if(reaction.state === "actual") reaction.mark();
+      if(reaction.state === "actual") {
+        reaction.state = "check";
+        reaction.markAsCheck();
+      }
     }
     if (this.active){
       PendingCells.push(this);
