@@ -36,7 +36,7 @@ export class ComputedCell extends Cell {
     super(value);
     this.fn = fn;
     this.active = active;
-    this.state = fn ? "dirty" : "actual";
+    this.state = "init";
   }
   get() {
     if (this.state !== "actual") this.actualize();
@@ -65,7 +65,7 @@ export class ComputedCell extends Cell {
           }
         }
       }
-    } else if (this.state === "dirty") {
+    } else if (this.state === "dirty" || this.state === "init") {
       this.run();
     }
     this.state = "actual";
@@ -93,13 +93,13 @@ export class ComputedCell extends Cell {
       if (dep instanceof ComputedCell && dep.reactions.size === 0) dep.unsubscribe();
     }
     this.dependencies.clear();
-    this.state = "dirty";
+    this.state = "init";
   }
 }
 
 export function runPendingCells() {
   for (const cell of PendingCells) {
-    cell.actualize();
+    if(cell.state !== "init") cell.actualize();
   }
   PendingCells.clear();
   if (Timer !== 0) {

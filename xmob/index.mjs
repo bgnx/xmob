@@ -14,7 +14,7 @@ export class Cell {
     this.value = value;
     this.fn = fn;
     this.active = active;
-    this.state = fn ? "dirty" : "actual";
+    this.state = fn ? "init" : "actual";
   }
 
   get() {
@@ -55,7 +55,7 @@ export class Cell {
           break;
         }
       }
-    } else if (this.state === "dirty") {
+    } else if (this.state === "dirty" || this.state === "init") {
       this.run();
     }
     this.state = "actual";
@@ -84,13 +84,13 @@ export class Cell {
       if (dep.reactions.size === 0) dep.unsubscribe();
     }
     this.dependencies.clear();
-    this.state = "dirty";
+    this.state = "init";
   }
 }
 
 export function runPendingCells() {
   for (const cell of PendingCells) {
-    cell.actualize();
+    if (cell.state !== "init") cell.actualize();
   }
   PendingCells.clear();
   if (Timer !== 0) {
