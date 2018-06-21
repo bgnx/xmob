@@ -1,5 +1,5 @@
 export let CurrentObserver = null
-const PendingCells = [];
+const PendingCells = new Set();
 let Timer = 0;
 
 export class Cell {
@@ -50,7 +50,7 @@ export class ComputedCell extends Cell {
       }
     }
     if (this.active) {
-      PendingCells.push(this);
+      PendingCells.add(this);
       if (Timer === 0) Timer = setTimeout(runPendingCells);
     }
   }
@@ -101,6 +101,7 @@ export function runPendingCells() {
   for (const cell of PendingCells) {
     cell.actualize();
   }
+  PendingCells.clear();
   if (Timer !== 0) {
     clearTimeout(Timer);
     Timer = 0;
