@@ -46,12 +46,11 @@ export class ComputedCell extends Cell {
     if (this.active) {
       PendingCells.add(this);
       if (Timer === 0) Timer = setTimeout(runPendingCells);
-    } else {
-      for (const reaction of this.reactions) {
-        if (reaction.state === "actual") {
-          reaction.state = "check";
-          reaction.markAsCheck();
-        }
+    }
+    for (const reaction of this.reactions) {
+      if (reaction.state === "actual") {
+        reaction.state = "check";
+        reaction.markAsCheck();
       }
     }
   }
