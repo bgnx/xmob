@@ -61,22 +61,22 @@ export class Cell {
     this.state = "actual";
   }
   run() {
-    if (!this.fn) return;
-    const currentObserver = CurrentObserver;
-    CurrentObserver = this;
     const oldDependencies = this.dependencies;
     this.dependencies = this.tempSet;
-    const newValue = this.fn();
+    this.tempSet = oldDependencies;
+
+    const currentObserver = CurrentObserver;
+    CurrentObserver = this;
+    this.set(this.fn());
     CurrentObserver = currentObserver;
-    for (const dep of oldDependencies) {
+
+    for (const dep of this.tempSet) {
       if (!this.dependencies.has(dep)) {
         dep.reactions.delete(this);
         if (dep.reactions.size === 0) dep.unsubscribe();
       }
     }
-    this.tempSet = oldDependencies;
     this.tempSet.clear();
-    this.set(newValue);
   }
   unsubscribe() {
     for (const dep of this.dependencies) {
