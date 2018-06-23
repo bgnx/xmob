@@ -5,7 +5,7 @@ let Timer = 0;
 export class Cell {
   reactions = new Set();
   value;
-  constructor(value, fn = null, active = false) {
+  constructor(value) {
     this.value = value;
   }
   get() {
