@@ -11,7 +11,7 @@ class Cell {
   get() {
     if (CurrentObserver) {
       this.reactions.add(CurrentObserver);
-      CurrentObserver.dependencies.add(this);
+      CurrentObserver.deps.add(this);
     }
     return this.value;
   }
@@ -27,8 +27,8 @@ class Cell {
 }
 
 class Autorun {
-  dependencies = new Set();
-  tempSet = new Set();
+  deps = new Set();
+  temp = new Set();
   fn;
   fnCtx;
   state;
@@ -46,7 +46,7 @@ class Autorun {
 
   actualize() {
     if (this.state === "check") {
-      for (const dep of this.dependencies) {
+      for (const dep of this.deps) {
         if (dep instanceof Autorun) {
           dep.actualize();
           if (this.state === "dirty") break;
@@ -58,31 +58,31 @@ class Autorun {
   }
 
   run() {
-    const oldDependencies = this.dependencies;
-    this.dependencies = this.tempSet;
-    this.tempSet = oldDependencies;
+    const oldDeps = this.deps;
+    this.deps = this.temp;
+    this.temp = oldDeps;
     const currentObserver = CurrentObserver;
     CurrentObserver = this;
     this.update.apply(this, arguments);
     CurrentObserver = currentObserver;
-    for (const dep of this.tempSet) {
-      if (!this.dependencies.has(dep)) {
+    for (const dep of this.temp) {
+      if (!this.deps.has(dep)) {
         dep.reactions.delete(this);
         if (dep instanceof Autorun && dep.reactions.size === 0) dep.unsubscribe();
       }
     }
-    this.tempSet.clear();
+    this.temp.clear();
   }
   update() {
     this.fn.apply(this.fnCtx, arguments);
   }
 
   unsubscribe() {
-    for (const dep of this.dependencies) {
+    for (const dep of this.deps) {
       dep.reactions.delete(this);
       if (dep instanceof Autorun && dep.reactions.size === 0) dep.unsubscribe();
     }
-    this.dependencies.clear();
+    this.deps.clear();
     this.state = "init";
   }
 }
@@ -100,7 +100,7 @@ class Computed extends Autorun {
     if (this.state !== "actual") this.actualize();
     if (CurrentObserver) {
       this.reactions.add(CurrentObserver);
-      CurrentObserver.dependencies.add(this);
+      CurrentObserver.deps.add(this);
     }
     return this.value;
   }
