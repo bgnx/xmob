@@ -19,8 +19,8 @@ class Cell {
     if (newValue !== this.value) {
       this.value = newValue;
       for (const reaction of this.reactions) {
+        if(reaction.state === "actual") reaction.markAsCheck();
         reaction.state = "dirty";
-        reaction.markAsCheck();
       }
     }
   }
@@ -138,4 +138,4 @@ function runPendingCells() {
     Timer = 0;
   }
 }
-export default {Cell, Autorun, Computed};
+module.exports = {Cell, Autorun, Computed, runPendingCells};

@@ -1,4 +1,4 @@
-const { Cell, Computed, Autorun, runPendingCells } = require("./index3.js");
+const { Cell, Computed, Autorun, runPendingCells } = require("./index4.js");
 const assert = require("assert");
 
 const Logs = [];

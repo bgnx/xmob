@@ -8,7 +8,7 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceFolder}/xmob/glitch-test2.js",
+      "program": "${workspaceFolder}/xmob/glitch-test3.js",
       "runtimeArgs": [
         "--harmony"
       ]

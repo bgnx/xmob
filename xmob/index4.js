@@ -1,17 +1,18 @@
 let CurrentObserver = null;
 const PendingCells = new Set();
 let Timer = 0;
+let RunId = 0;
 
 class Cell {
   reactions = new Set();
   value;
+  flag = 0;
   constructor(value) {
     this.value = value;
   }
   get() {
     if (CurrentObserver) {
-      this.reactions.add(CurrentObserver);
-      CurrentObserver.deps.add(this);
+      CurrentObserver.deps[CurrentObserver.depsCount++] = this;
     }
     return this.value;
   }
@@ -27,8 +28,9 @@ class Cell {
 }
 
 class Autorun {
-  deps = new Set();
-  temp = new Set();
+  deps = [];
+  depsCount = 0;
+  temp = [];
   fn;
   fnCtx;
   state;
@@ -46,7 +48,8 @@ class Autorun {
 
   actualize() {
     if (this.state === "check") {
-      for (const dep of this.deps) {
+      for (let i = 0; i < this.depsCount; i++) {
+        const dep = this.deps[i];
         if (dep instanceof Autorun) {
           dep.actualize();
           if (this.state === "dirty") break;
@@ -59,30 +62,47 @@ class Autorun {
 
   run() {
     const oldDeps = this.deps;
+    const oldDepsCount = this.depsCount;
     this.deps = this.temp;
+    this.depsCount = 0;
     this.temp = oldDeps;
+
     const currentObserver = CurrentObserver;
     CurrentObserver = this;
     this.update.apply(this, arguments);
     CurrentObserver = currentObserver;
-    for (const dep of this.temp) {
-      if (!this.deps.has(dep)) {
+
+    RunId+=2;
+    for(let i = 0; i < this.depsCount; i++) {
+      this.deps[i].flag = RunId;
+    }
+    for(let i = 0; i < oldDepsCount; i++){
+      const dep = oldDeps[i];
+      if(dep.flag === RunId){
+        dep.flag = RunId+1;
+      } else if(dep.flag < RunId) {
         dep.reactions.delete(this);
         if (dep instanceof Autorun && dep.reactions.size === 0) dep.unsubscribe();
       }
     }
-    this.temp.clear();
+    for(let i = 0; i < this.depsCount; i++){
+      const dep = this.deps[i];
+      if(dep.flag === RunId) {
+        dep.reactions.add(this);
+      }
+    }
   }
   update() {
     this.fn.apply(this.fnCtx, arguments);
   }
 
   unsubscribe() {
-    for (const dep of this.deps) {
+    for (let i = 0; i < this.depsCount; i++) {
+      const dep = this.deps[i];
       dep.reactions.delete(this);
       if (dep instanceof Autorun && dep.reactions.size === 0) dep.unsubscribe();
     }
-    this.deps.clear();
+    this.depsCount = 0;
     this.state = "init";
   }
 }
@@ -99,8 +119,7 @@ class Computed extends Autorun {
   get() {
     if (this.state !== "actual") this.actualize();
     if (CurrentObserver) {
-      this.reactions.add(CurrentObserver);
-      CurrentObserver.deps.add(this);
+      CurrentObserver.deps[CurrentObserver.depsCount++] = this;
     }
     return this.value;
   }
@@ -138,4 +157,4 @@ function runPendingCells() {
     Timer = 0;
   }
 }
-export default {Cell, Autorun, Computed};
+module.exports = {Cell, Autorun, Computed, runPendingCells};
